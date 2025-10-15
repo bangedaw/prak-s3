@@ -34,7 +34,12 @@ transfer fromName toName amount portfolio =
 --
 -- Hint: Gunakan fungsi map dan lambda
 withdraw :: String -> Double -> Portfolio -> Portfolio  
-withdraw n m p = 
+withdraw nm amount porto = 
+    let updatePerson = \p -> 
+            if name p == nm then p { balance = balance p - amount }
+            else p
+    in map updatePerson porto
+
 -- TODO: Implementasikan fungsi withdraw di sini
 
 -- Deposit function using lambda
@@ -44,6 +49,11 @@ withdraw n m p =
 -- 
 -- Hint: Gunakan fungsi map dan lambda
 deposit :: String -> Double -> Portfolio -> Portfolio
+deposit nm amount porto =
+    let updatePerson = \p -> 
+            if name p == nm then p { balance = balance p + amount }
+            else p
+    in map updatePerson porto
 -- TODO: Implementasikan fungsi deposit di sini
 
 -- Generic sorting function that takes a comparison function as parameter
@@ -58,17 +68,14 @@ sortBy compareFunc (x:xs) =
 -- Sort by name using lambda for comparison
 -- Hint: Gunakan compare dan lambda
 sortByName :: Portfolio -> Portfolio
-sortByName = sortBy ( -- TODO: Implementasikan fungsi lambda untuk perbandingan berdasarkan nama di sini
- )
+sortByName porto = sortBy (\x y -> compare (head (name x)) (head (name y))) porto
 
 -- Sort by age using lambda for comparison  
 -- Hint: Gunakan compare dan lambda
 sortByAge :: Portfolio -> Portfolio
-sortByAge = sortBy ( -- TODO: Implementasikan fungsi lambda untuk perbandingan berdasarkan umur di sini
- )
+sortByAge porto = sortBy (\x y -> compare ((age x)) ((age y))) porto
 
 -- Sort by balance using lambda for comparison
 -- Hint: Gunakan compare dan lambda
 sortByBalance :: Portfolio -> Portfolio
-sortByBalance = sortBy ( -- TODO: Implementasikan fungsi lambda untuk perbandingan berdasarkan saldo di sini
- )
+sortByBalance porto = sortBy (\x y -> compare (balance x) (balance y)) porto
