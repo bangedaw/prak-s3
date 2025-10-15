@@ -15,7 +15,8 @@ type Portfolio = [Person]
 -- Hint: Kembalikan tipe bentukan Person yang telah terinisialisasi
 -- name, age, balance -> Person
 makePerson :: String -> Int -> Double -> Person
-makePerson = -- TODO: Implementasikan fungsi lambda makePerson di sini
+makePerson n a b = Person n a b
+    -- TODO: Implementasikan fungsi lambda makePerson di sini
 
 -- Transfer function using lambda and higher-order functions
 transfer :: String -> String -> Double -> Portfolio -> Portfolio
@@ -30,9 +31,10 @@ transfer fromName toName amount portfolio =
 -- name, amount, portfolio -> updated portfolio
 --
 -- Fungsi withdraw mengurangi saldo (balance) dari person dengan {nama} tertentu sebanyak {amount}
--- 
+--
 -- Hint: Gunakan fungsi map dan lambda
 withdraw :: String -> Double -> Portfolio -> Portfolio  
+withdraw n m p = 
 -- TODO: Implementasikan fungsi withdraw di sini
 
 -- Deposit function using lambda

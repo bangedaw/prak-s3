@@ -1,6 +1,4 @@
 module TreeFold where
-import Control.Applicative (Alternative(empty))
-import System.Win32 (xBUTTON1)
 
 -- DEFINISI DATA STRUKTUR
 -- Binary Tree dengan konstruktor Node dan Empty
@@ -40,26 +38,26 @@ isUnerRight  :: BinTree a -> Bool
 isBiner      :: BinTree a -> Bool
 
 -- Realisasi
-isTreeEmpty Empty                = True
-isTreeEmpty _                    = False
+isTreeEmpty Empty = True
+isTreeEmpty _ = False
 
-isOneElmt (Node _ Empty Empty)   = True
-isOneElmt _                      = False
+isOneElmt (Node _ Empty Empty) = True
+isOneElmt _ = False
 
-isExistLeft (Node _ l _)         = not (isTreeEmpty l)
-isExistLeft _                    = False
+isExistLeft (Node _ l _) = not (isTreeEmpty l)
+isExistLeft _  = False
 
-isExistRight (Node _ _ r)        = not (isTreeEmpty r)
-isExistRight _                   = False
+isExistRight (Node _ _ r) = not (isTreeEmpty r)
+isExistRight _ = False
 
-isUnerLeft (Node _ l r)          = not (isTreeEmpty l) && isTreeEmpty r
-isUnerLeft _                     = False
+isUnerLeft (Node _ l r) = not (isTreeEmpty l) && isTreeEmpty r
+isUnerLeft _ = False
 
-isUnerRight (Node _ l r)         = isTreeEmpty l && not (isTreeEmpty r)
-isUnerRight _                    = False
+isUnerRight (Node _ l r) = isTreeEmpty l && not (isTreeEmpty r)
+isUnerRight _ = False
 
-isBiner (Node _ l r)             = not (isTreeEmpty l) && not (isTreeEmpty r)
-isBiner _                        = False
+isBiner (Node _ l r) = not (isTreeEmpty l) && not (isTreeEmpty r)
+isBiner _ = False
 
 -- SPESIFIKASI
 -- treeFoldPost f b t menghasilkan akumulasi nilai pohon t dengan fold post-order menggunakan f dan basis b.
