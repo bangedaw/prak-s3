@@ -8,7 +8,7 @@
 int ukurLantai(int n){
     if(n < 4){
         return n;
-    } else if(n == 4 || n == 5){
+    } else if(n == 4 & n == 5){
         return n + ukurLantai(n - 3);
     } else {
         return ukurLantai(n - 2) + ukurLantai(n - 1);
