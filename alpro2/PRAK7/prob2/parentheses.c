@@ -1,23 +1,27 @@
 #include <stdio.h>
 
-int comb(int n, int k){
-    if (k == 0){
-        return 1;
-    } else {
-        int temp = comb(n, k-1);
-        int a = (n - k + 1);
-        int b = k;
-        return (temp * a) / b;  
-    }
+long long countComb(int n) {
+	// base case
+	if (n == 0) return 0;
+	if (n == 1) return 1;
+
+	long long total = 0;
+
+	for (int i = 0; i < n; i++) {
+		long long left = countComb(i);
+		long long right = countComb(n - 1 - i);
+
+		if (left == 0) left = 1;
+		if (right == 0) right = 1;
+
+		total += left * right;
+	}
+	return total;
 }
 
-int parentheses(int n){
-    return comb(2*n, n) / (n + 1);
-}
-
-int main(){
-    int a;
-    scanf("%d", &a);
-    printf("%d\n", parentheses(a));
+int main() {
+    int n;
+    scanf("%d", &n);
+    printf("%d\n", countComb(n));
     return 0;
 }
