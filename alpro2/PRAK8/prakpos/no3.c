@@ -18,7 +18,6 @@
  #include "mesinkata.h"
  #include "boolean.h"
  #include <stdio.h>
- #include <string.h>
 
  /* ====== FSM Parser ====== */
 typedef enum {
@@ -55,116 +54,162 @@ int isPredikat(const Word w) {
         || eqWordCStrInsensitive(w, "ambil");
 }
 
-/* Silahkan tambahkan fungsi-fungsi helper lainnya jika perlu */
-
-/* Mengecek apakah token adalah koma */
-int isCommaToken(Word w){
-    return (w.Length == 1) && (w.TabWord[0] == ',');
-}
-
-/* * Mengecek apakah token adalah objek
-* Objek adalah kata apapun yang bukan subjek, objek, ataupun koma.
-*/
-int isObjek(Word w){
-    return !isSubjek(w) && !isPredikat(w) && !isCommaToken(w);
-}
-/*
-* Fungsi utama untuk mengecek apakah kalimat sesuai grammar daftar objek
-* I.S. Mesin kata sudah siap digunakan (panggil STARTWORD() sebelumnya)
-* F.S. Mengembalikan true (1) jika kalimat valid, false (0) jika tidak
-*
-* Grammar: <Kalimat> ::= <Subjek> <Predikat> <Objek> {, <Objek>}*
-*
-* Contoh:
-*   Input  : "aku beli buku, pensil, penggaris."
-*   Output : 1
-*
-*   Input  : "aku beli , pensil."
-*   Output : 0 // tidak valid karena tidak ada objek setelah kata beli
-
-*   CONTOH LEBIH JELAS LIHAT PADA OLYMPIA
-*
-* Hint: Gunakan STARTWORD() untuk memulai pembacaan kata dan
-*       ADVWORD() untuk pindah ke kata berikutnya
-*/
-
-/*
-* Hint (secukupnya):
-*
-* A. Pakai FSM (Finite State Machine) seperti yang sudah didefinisikan di atas
-*
-* B. Transisi inti:
-*    SUBJEK → PREDIKAT → OBJEK
-*
-*    Setelah objek:
-*    - Jika objek berkoma (melekat) → S_EXPECT_OBJECT_AFTER_COMMA
-*    - Jika tanpa koma → S_EXPECT_SEPARATOR_OR_END
-*
-*    Di S_EXPECT_SEPARATOR_OR_END, satu-satunya token valid
-*    (kalau belum MARK) adalah koma → lanjut ke S_EXPECT_OBJECT_AFTER_COMMA.
-*
-*    Di S_EXPECT_OBJECT_AFTER_COMMA, token wajib objek (boleh lagi berkoma).
-*
-* C. Kondisi akhir valid:
-*    Loop selesai (MARK terbaca → EndWord == true) dan state terakhir adalah
-*    S_EXPECT_SEPARATOR_OR_END serta setidaknya satu objek sudah terbaca.
-*
-* D. Helper minimal yang disarankan:
-*    - isCommaToken(Word w) → w.Length == 1 && w.TabWord[0] == ','.
-*    - isObjToken(Word w, int *hasTrailingComma):
-*        * Jika token berakhir ',', set *hasTrailingComma = 1.
-*        * Jika tidak berakhir ',', set *hasTrailingComma = 0.
-*        * Token "," bukan objek.
-*/
+ /* Silahkan tambahkan fungsi-fungsi helper lainnya jika perlu */
  
- int cfg_parser() {
-    State state = S_EXPECT_SUBJECT;
-    STARTWORD();
+ /*
+  * Fungsi utama untuk mengecek apakah kalimat sesuai grammar daftar objek
+  * I.S. Mesin kata sudah siap digunakan (panggil STARTWORD() sebelumnya)
+  * F.S. Mengembalikan true (1) jika kalimat valid, false (0) jika tidak
+  *
+  * Grammar: <Kalimat> ::= <Subjek> <Predikat> <Objek> {, <Objek>}*
+  *
+  * Contoh:
+  *   Input  : "aku beli buku, pensil, penggaris."
+  *   Output : 1
+  *
+  *   Input  : "aku beli , pensil."
+  *   Output : 0 // tidak valid karena tidak ada objek setelah kata beli
 
-    if(EndWord || !isSubjek(currentWord)){
-        return 0;
-    }
-    state = S_EXPECT_PREDICATE;
-    ADVWORD();
+  *   CONTOH LEBIH JELAS LIHAT PADA OLYMPIA
+  *
+  * Hint: Gunakan STARTWORD() untuk memulai pembacaan kata dan
+  *       ADVWORD() untuk pindah ke kata berikutnya
+  */
+ 
+ /*
+  * Hint (secukupnya):
+  *
+  * A. Pakai FSM (Finite State Machine) seperti yang sudah didefinisikan di atas
+  *
+  * B. Transisi inti:
+  *    SUBJEK → PREDIKAT → OBJEK
+  *
+  *    Setelah objek:
+  *    - Jika objek berkoma (melekat) → S_EXPECT_OBJECT_AFTER_COMMA
+  *    - Jika tanpa koma → S_EXPECT_SEPARATOR_OR_END
+  *
+  *    Di S_EXPECT_SEPARATOR_OR_END, satu-satunya token valid
+  *    (kalau belum MARK) adalah koma → lanjut ke S_EXPECT_OBJECT_AFTER_COMMA.
+  *
+  *    Di S_EXPECT_OBJECT_AFTER_COMMA, token wajib objek (boleh lagi berkoma).
+  *
+  * C. Kondisi akhir valid:
+  *    Loop selesai (MARK terbaca → EndWord == true) dan state terakhir adalah
+  *    S_EXPECT_SEPARATOR_OR_END serta setidaknya satu objek sudah terbaca.
+  *
+  * D. Helper minimal yang disarankan:
+  *    - isCommaToken(Word w) → w.Length == 1 && w.TabWord[0] == ','.
+  *    - isObjToken(Word w, int *hasTrailingComma):
+  *        * Jika token berakhir ',', set *hasTrailingComma = 1.
+  *        * Jika tidak berakhir ',', set *hasTrailingComma = 0.
+  *        * Token "," bukan objek.
+  */
+ 
+ 
+int isCommaToken(Word w) {
+    return (w.Length == 1 && w.TabWord[0] == ',');
+}
 
-    if(EndWord || !isPredikat(currentWord)){
-        return 0;
-    }
-    state = S_EXPECT_FIRST_OBJECT;
-    ADVWORD();
-    
-    if(EndWord || !isObjek(currentWord)){
-        return 0;
-    }
-    state = S_EXPECT_SEPARATOR_OR_END;
-    ADVWORD();
+int isValidObject(Word w, int *hasTrailingComma) {
+    if (w.Length == 0) return 0;
 
-    while(!EndWord){    
-        switch(state){
-            case S_EXPECT_SEPARATOR_OR_END : 
-                if(isCommaToken(currentWord)){
-                    state = S_EXPECT_OBJECT_AFTER_COMMA;
-                } else {return 0;}
-                break;
+    *hasTrailingComma = 0;
 
-            case S_EXPECT_OBJECT_AFTER_COMMA : 
-                if(isObjek(currentWord)){
-                    state = S_EXPECT_SEPARATOR_OR_END;
-                } else {return 0;}
-                break;
+    /* Jika token berakhir koma */
+    if (w.TabWord[w.Length - 1] == ',') {
+        *hasTrailingComma = 1;
 
-            default : 
+        if (w.Length == 1) return 0;  /* token "," bukan objek */
+        
+        /* Semua karakter sebelum koma harus alphabet */
+        for (int i = 0; i < w.Length - 1; i++) {
+            char c = w.TabWord[i];
+            if (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')))
                 return 0;
         }
+        return 1;
+    }
+
+    /* Tidak berakhir koma → semua harus alphabet */
+    for (int i = 0; i < w.Length; i++) {
+        char c = w.TabWord[i];
+        if (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')))
+            return 0;
+    }
+
+    return 1;
+}
+
+int cfg_parser() {
+    STARTWORD();
+    
+    State state = S_EXPECT_SUBJECT;
+    int hasObj = 0; // minimal satu objek wajib ada
+    
+    while (!EndWord) {
+        Word w = currentWord;
+
+        switch (state) {
+
+        case S_EXPECT_SUBJECT:
+            if (isSubjek(w)) {
+                state = S_EXPECT_PREDICATE;
+            } else {
+                return 0;
+            }
+            break;
+
+        case S_EXPECT_PREDICATE:
+            if (isPredikat(w)) {
+                state = S_EXPECT_FIRST_OBJECT;
+            } else {
+                return 0;
+            }
+            break;
+
+        case S_EXPECT_FIRST_OBJECT: {
+            int trailingComma;
+            if (isValidObject(w, &trailingComma)) {
+                hasObj = 1;
+                if (trailingComma)
+                    state = S_EXPECT_OBJECT_AFTER_COMMA;
+                else
+                    state = S_EXPECT_SEPARATOR_OR_END;
+            } else {
+                return 0;
+            }
+            break;
+        }
+
+        case S_EXPECT_SEPARATOR_OR_END:
+            if (isCommaToken(w)) {
+                state = S_EXPECT_OBJECT_AFTER_COMMA;
+            } else {
+                return 0;
+            }
+            break;
+
+        case S_EXPECT_OBJECT_AFTER_COMMA: {
+            int trailingComma;
+            if (isValidObject(w, &trailingComma)) {
+                if (trailingComma)
+                    state = S_EXPECT_OBJECT_AFTER_COMMA;
+                else
+                    state = S_EXPECT_SEPARATOR_OR_END;
+            } else {
+                return 0;
+            }
+            break;
+        }
+
+        default:
+            return 0;
+        }
+
         ADVWORD();
     }
 
-    return (state == S_EXPECT_SEPARATOR_OR_END);
-}
-
-// int main(){
-//     int a;
-//     a = cfg_parser();
-//     printf("%d", a);
-//     return 0;
-// }
+    if (state == S_EXPECT_SEPARATOR_OR_END && hasObj)
+        return 1;
+    return 0;
+ }
