@@ -4,6 +4,7 @@
 #include "mesinkata.h"
 #include "boolean.h"
 #include <stdio.h>  
+#include <string.h>
 
 /*
  * Fungsi untuk membandingkan apakah sebuah Word sama dengan string tertentu
